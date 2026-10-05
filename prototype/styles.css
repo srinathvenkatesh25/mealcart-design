@@ -1,0 +1,1584 @@
+/* MealCart prototype. Base styles are the MVP's own (frontend/app/globals.css);
+   prototype-only additions are at the end.
+
+   MealCart — the nutrition label is the one loud thing; everything else stays quiet.
+   Palette from an Indian kitchen: curry leaf (actions), turmeric (waiting/progress),
+   chili (errors only), steel greys, cool paper. */
+
+:root {
+  --paper: #f5f7f4;
+  --card: #ffffff;
+  --ink: #15191c;
+  --steel: #5f6a71;
+  --hair: #d3d9d5;
+  --leaf: #2f5d46;
+  --leaf-ink: #ffffff;
+  --leaf-wash: #e3ede7;
+  --turmeric: #e2a400;
+  --turmeric-wash: #fbf0cf;
+  --chili: #b23a28;
+  --chili-wash: #f8e4df;
+
+  --font-body: "Libre Franklin", "Franklin Gothic", "Helvetica Neue", Arial, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+
+  --radius: 6px;
+  --gutter: 16px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111416;
+    --card: #181c1f;
+    --ink: #eceeea;
+    --steel: #9aa4aa;
+    --hair: #2c3337;
+    --leaf: #78b996;
+    --leaf-ink: #0d1a13;
+    --leaf-wash: #1c2b23;
+    --turmeric: #f0b92b;
+    --turmeric-wash: #2e2610;
+    --chili: #e3705c;
+    --chili-wash: #33201c;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #111416;
+  --card: #181c1f;
+  --ink: #eceeea;
+  --steel: #9aa4aa;
+  --hair: #2c3337;
+  --leaf: #78b996;
+  --leaf-ink: #0d1a13;
+  --leaf-wash: #1c2b23;
+  --turmeric: #f0b92b;
+  --turmeric-wash: #2e2610;
+  --chili: #e3705c;
+  --chili-wash: #33201c;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--turmeric);
+  outline-offset: 2px;
+}
+
+.mono,
+.mono-num {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Prices inside sentences use the body face; mono is for columns of figures. */
+.question .mono,
+.section-head .mono {
+  font-family: var(--font-body);
+  font-weight: 700;
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--steel);
+}
+
+.muted {
+  color: var(--steel);
+}
+
+.fine {
+  font-size: 0.8125rem;
+  color: var(--steel);
+}
+
+/* ---------- Shell ---------- */
+
+.shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--gutter) 64px;
+}
+
+.masthead {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 0;
+  border-bottom: 2px solid var(--ink);
+}
+
+.wordmark {
+  font-weight: 900;
+  font-size: 1.375rem;
+  letter-spacing: -0.02em;
+}
+
+.stages {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex: 1;
+  counter-reset: stage;
+}
+
+.stages li {
+  counter-increment: stage;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--steel);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.stages li::before {
+  content: counter(stage) " ";
+  font-family: var(--font-data);
+  font-weight: 400;
+  margin-right: 2px;
+}
+
+.stages li.done {
+  color: var(--leaf);
+}
+
+.stages li[aria-current="step"] {
+  color: var(--ink);
+  background: var(--turmeric-wash);
+  box-shadow: inset 0 0 0 1px var(--turmeric);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 40px;
+  padding-top: 32px;
+  align-items: start;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  min-width: 0;
+}
+
+.rail {
+  position: sticky;
+  top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+}
+
+/* ---------- Hero ---------- */
+
+.hero h1 {
+  font-weight: 900;
+  font-size: clamp(2rem, 4.2vw, 3.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  max-width: 18ch;
+}
+
+.hero p {
+  margin-top: 14px;
+  max-width: 60ch;
+  color: var(--steel);
+  font-size: 1.0625rem;
+}
+
+.hero-run h1 {
+  max-width: none;
+  font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+}
+
+.hero-run .mono-num {
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 16px;
+  margin-bottom: 16px;
+}
+
+.section-head h2:focus {
+  outline: none;
+}
+
+.section-head h2 {
+  font-weight: 900;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.section-head p {
+  color: var(--steel);
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 120ms, border-color 120ms;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--leaf);
+  color: var(--leaf-ink);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--leaf) 85%, var(--ink));
+}
+
+.btn-quiet {
+  background: transparent;
+  border-color: var(--hair);
+}
+
+.btn-quiet:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+
+.btn-link {
+  min-height: 0;
+  padding: 2px 6px;
+  background: none;
+  color: var(--leaf);
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.btn-large {
+  min-height: 52px;
+  padding: 12px 28px;
+  font-size: 1.0625rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ---------- Form ---------- */
+
+.spec {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.spec fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  width: 100%;
+}
+
+.spec legend {
+  padding: 0;
+  margin-bottom: 12px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--steel);
+}
+
+.spec-tabs {
+  display: inline-flex;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.spec-tabs button {
+  padding: 8px 16px;
+  border: 0;
+  background: transparent;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.spec-tabs button[aria-selected="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+.field > span {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.field em {
+  font-style: normal;
+  font-weight: 400;
+  color: var(--steel);
+}
+
+.field small {
+  color: var(--steel);
+  font-size: 0.8125rem;
+}
+
+.field-wide {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.field input:not([type="checkbox"]),
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 1.5px solid var(--hair);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+
+.field input:not([type="checkbox"]):focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--ink);
+}
+
+.field.check {
+  flex-direction: row;
+  align-items: center;
+  align-self: end;
+  min-height: 42px;
+}
+
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--leaf);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px 6px 8px;
+  border: 1.5px solid var(--hair);
+  border-radius: 999px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  background: var(--card);
+}
+
+.chip:has(input:checked) {
+  border-color: var(--leaf);
+  background: var(--leaf-wash);
+}
+
+/* The targets read like the top of a nutrition label. */
+.targets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 220px));
+  gap: 0;
+  border: 2px solid var(--ink) !important;
+  border-radius: 2px;
+  padding: 10px 14px 14px !important;
+  width: auto !important;
+  background: var(--card);
+}
+
+.targets legend {
+  float: left;
+  grid-column: 1 / -1;
+  width: 100%;
+  margin: 0 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 8px solid var(--ink);
+  font-size: 1.75rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  color: var(--ink);
+}
+
+.target > span {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.target input:not([type="checkbox"]) {
+  border: 0;
+  border-bottom: 1.5px solid var(--hair);
+  border-radius: 0;
+  padding: 0;
+  min-height: 0;
+  background: transparent;
+  font-size: 2.75rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.target + .target {
+  padding-left: 18px;
+  margin-left: 18px;
+  border-left: 1px solid var(--ink);
+}
+
+.form-error {
+  color: var(--chili);
+  background: var(--chili-wash);
+  padding: 10px 12px;
+  border-radius: var(--radius);
+}
+
+/* ---------- Nutrition-label day cards (the signature) ---------- */
+
+.labels {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.label {
+  background: var(--card);
+  border: 2px solid var(--ink);
+  border-radius: 2px;
+  padding: 8px 10px 10px;
+  animation: label-in 360ms ease-out both;
+}
+
+.labels .label:nth-child(2) { animation-delay: 50ms; }
+.labels .label:nth-child(3) { animation-delay: 100ms; }
+.labels .label:nth-child(4) { animation-delay: 150ms; }
+.labels .label:nth-child(5) { animation-delay: 200ms; }
+.labels .label:nth-child(6) { animation-delay: 250ms; }
+.labels .label:nth-child(7) { animation-delay: 300ms; }
+
+@keyframes label-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.label-day {
+  font-size: 1.875rem;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.label-rule-thick {
+  height: 9px;
+  background: var(--ink);
+  margin: 4px 0;
+}
+
+.label-rule-mid {
+  height: 4px;
+  background: var(--ink);
+  margin: 4px 0 2px;
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  border-top: 1px solid var(--ink);
+  padding-top: 2px;
+}
+
+.label-row:first-of-type,
+.label-rule-thick + .label-row,
+.label-rule-mid + .label-row {
+  border-top: 0;
+}
+
+.label-row strong {
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.label-row-big span {
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.label-row-big strong {
+  font-size: 2.5rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.label-target {
+  font-size: 0.75rem;
+  color: var(--steel);
+  text-align: right;
+  font-family: var(--font-data);
+}
+
+.label-row-info {
+  color: var(--steel);
+  font-size: 0.8125rem;
+  border-top-color: var(--hair);
+}
+
+.meals {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.meal {
+  position: relative;
+  border-top: 1px solid var(--hair);
+  padding: 6px 0;
+}
+
+.meal:first-child {
+  border-top: 0;
+}
+
+.meal summary {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: baseline;
+  cursor: pointer;
+  list-style: none;
+}
+
+.meal summary::-webkit-details-marker {
+  display: none;
+}
+
+.meal-slot {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--steel);
+}
+
+.meal-title {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1.3;
+}
+
+.meal details[open] .meal-title {
+  text-decoration: underline;
+  text-decoration-color: var(--turmeric);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.meal-macros {
+  grid-column: 2 / -1;
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  color: var(--steel);
+}
+
+.meal-time {
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  color: var(--steel);
+}
+
+.meal-body {
+  padding: 6px 0 4px;
+  font-size: 0.875rem;
+}
+
+.ingredients,
+.steps {
+  margin: 0;
+  padding: 0;
+}
+
+.ingredients {
+  list-style: none;
+}
+
+/* Day cards can be narrow, so an ingredient's numbers sit on their own line under its name. */
+.ingredients li {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  column-gap: 8px;
+  align-items: baseline;
+  padding: 2px 0;
+}
+
+.ing-macros {
+  grid-column: 2;
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  color: var(--steel);
+}
+
+/* The same four numbers as the day's label, for one meal. Carbs and fat are information only. */
+.macro-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px 12px;
+  margin: 2px 0 10px;
+  padding: 6px 0;
+  border-top: 4px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+.macro-strip div {
+  display: flex;
+  flex-direction: column;
+}
+
+.macro-strip dt {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.macro-strip dd {
+  margin: 0;
+  white-space: nowrap;
+  font-size: 1rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.macro-strip .minor dt,
+.macro-strip .minor dd {
+  color: var(--steel);
+  font-weight: 600;
+}
+
+.grams {
+  display: inline-block;
+  min-width: 52px;
+  font-family: var(--font-data);
+  font-size: 0.8125rem;
+  color: var(--steel);
+}
+
+.steps {
+  margin-top: 8px;
+  padding-left: 18px;
+}
+
+.steps li + li {
+  margin-top: 2px;
+}
+
+.equipment {
+  margin-top: 6px;
+  color: var(--steel);
+  font-size: 0.8125rem;
+}
+
+/* One quiet Swap per meal, shown on hover or keyboard focus; always shown on touch screens. */
+.swap-trigger {
+  position: absolute;
+  right: 0;
+  bottom: 4px;
+  background: var(--card);
+  opacity: 0;
+  transition: opacity 120ms;
+}
+
+/* With a meal open, Swap moves below it instead of covering its last line. */
+.meal:has(details[open]) .swap-trigger {
+  position: static;
+  opacity: 1;
+  margin-top: 4px;
+}
+
+.meal:hover .swap-trigger,
+.meal:focus-within .swap-trigger,
+.swap-trigger:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .swap-trigger {
+    position: static;
+    opacity: 1;
+    margin-left: 82px;
+  }
+
+  .meal:has(details[open]) .swap-trigger {
+    margin-left: 0;
+  }
+}
+
+.swap {
+  margin: 8px 0 4px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--turmeric-wash);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.label-ghost {
+  height: 280px;
+  border-color: var(--hair);
+  background:
+    linear-gradient(var(--hair), var(--hair)) 10px 52px / calc(100% - 20px) 9px no-repeat,
+    linear-gradient(var(--hair), var(--hair)) 10px 120px / calc(100% - 20px) 4px no-repeat,
+    var(--card);
+  animation: ghost 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes ghost {
+  from { opacity: 0.45; }
+  to { opacity: 1; }
+}
+
+.placeholder {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.placeholder p {
+  grid-column: 1 / -1;
+  color: var(--steel);
+}
+
+/* ---------- Grocery list ---------- */
+
+.grocery-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  columns: 2 300px;
+  column-gap: 32px;
+}
+
+.grocery-items li {
+  break-inside: avoid;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--hair);
+}
+
+.grocery-items label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.grocery-name {
+  font-weight: 600;
+}
+
+.grocery-qty {
+  font-size: 0.875rem;
+  text-align: right;
+}
+
+.grocery-subs {
+  grid-column: 1 / -1;
+  font-size: 0.75rem;
+  color: var(--steel);
+  padding-left: 26px;
+}
+
+.grocery-items li:not(:has(label)) .grocery-subs {
+  padding-left: 0;
+}
+
+.grocery-items li.is-removed .grocery-name,
+.grocery-items li.is-removed .grocery-qty {
+  color: var(--steel);
+  text-decoration: line-through;
+}
+
+/* ---------- Rail ---------- */
+
+.question {
+  background: var(--card);
+  border: 2px solid var(--turmeric);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 0 0 4px var(--turmeric-wash);
+}
+
+.question h2 {
+  font-weight: 900;
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.question .eyebrow {
+  color: color-mix(in srgb, var(--turmeric) 70%, var(--ink));
+}
+
+.question form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shot {
+  width: 100%;
+  border: 1px solid var(--hair);
+  border-radius: var(--radius);
+}
+
+.notice {
+  font-size: 0.875rem;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: var(--turmeric-wash);
+}
+
+.feed ol,
+.how ol {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feed li {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr);
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px solid var(--hair);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.feed-step {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--steel);
+  padding-top: 2px;
+}
+
+.feed-working span:last-child {
+  color: var(--steel);
+}
+
+.feed-working .feed-step {
+  color: var(--turmeric);
+  animation: ghost 0.9s ease-in-out infinite alternate;
+}
+
+.how li {
+  counter-increment: how;
+  padding: 10px 0;
+  border-top: 1px solid var(--hair);
+  font-size: 0.9375rem;
+  color: var(--steel);
+}
+
+.how ol {
+  counter-reset: how;
+}
+
+.how li::before {
+  content: counter(how);
+  display: inline-block;
+  width: 22px;
+  font-family: var(--font-data);
+  color: var(--ink);
+}
+
+.how b {
+  color: var(--ink);
+}
+
+/* ---------- Cart ---------- */
+
+.receipt {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.receipt th,
+.receipt td {
+  text-align: left;
+  padding: 8px 10px 8px 0;
+  border-bottom: 1px solid var(--hair);
+  vertical-align: top;
+}
+
+.receipt thead th {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--steel);
+  border-bottom: 2px solid var(--ink);
+}
+
+.receipt .num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.receipt tfoot th,
+.receipt tfoot td {
+  border-top: 2px solid var(--ink);
+  border-bottom: 0;
+  font-weight: 800;
+}
+
+.receipt .store-row th,
+.receipt .store-row td {
+  padding-top: 16px;
+  font-weight: 900;
+  font-size: 1rem;
+  border-bottom: 2px solid var(--ink);
+}
+
+.tick {
+  display: inline-block;
+  width: 20px;
+  color: var(--leaf);
+  font-weight: 800;
+}
+
+.is-missing .tick {
+  color: var(--chili);
+}
+
+.is-missing td:first-child {
+  color: var(--chili);
+}
+
+.sub-note {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--turmeric-wash);
+}
+
+.over {
+  color: var(--chili);
+  font-weight: 600;
+}
+
+.callout {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-left: 4px solid var(--chili);
+  background: var(--chili-wash);
+}
+
+.notes {
+  margin: 16px 0 0;
+  padding-left: 18px;
+  color: var(--steel);
+  font-size: 0.875rem;
+}
+
+.usage {
+  margin-top: 16px;
+}
+
+.checkout {
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--leaf-wash);
+}
+
+.checkout p {
+  flex: 1 1 280px;
+}
+
+.failure {
+  border: 2px solid var(--chili);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.failure h2 {
+  font-weight: 900;
+  color: var(--chili);
+}
+
+.failure ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.875rem;
+  color: var(--steel);
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .rail {
+    position: static;
+    max-height: none;
+    order: -1;
+  }
+
+  .rail:not(:has(.question)) {
+    order: 0;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .masthead {
+    flex-wrap: wrap;
+    gap: 10px 16px;
+  }
+
+  .stages {
+    order: 3;
+    flex-basis: 100%;
+    overflow-x: auto;
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .targets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100% !important;
+  }
+
+  .target input:not([type="checkbox"]) {
+    font-size: 2rem;
+  }
+
+  .meal-body {
+    padding-left: 0;
+  }
+
+  .swap-trigger {
+    margin-left: 0;
+  }
+
+  .meal-body {
+    padding-left: 0;
+  }
+
+  .receipt thead {
+    display: none;
+  }
+
+  .receipt tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    border-bottom: 1px solid var(--hair);
+    padding: 6px 0;
+  }
+
+  .receipt td {
+    border: 0;
+    padding: 2px 0;
+  }
+
+  .receipt .store-row {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .receipt td:nth-child(2) {
+    grid-column: 1 / -1;
+    order: 3;
+    font-size: 0.875rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ======================================================================
+   Prototype-only additions
+   ====================================================================== */
+
+/* The presenter's bar sits outside the app, so it is drawn inverted. */
+.demo-bar {
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.875rem;
+}
+
+.demo-bar-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 10px var(--gutter);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+}
+
+.demo-bar b {
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+.demo-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.demo-group > span {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.demo-bar button,
+.demo-bar select {
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 1.5px solid color-mix(in srgb, var(--paper) 35%, transparent);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--paper);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.demo-bar select option {
+  color: initial;
+}
+
+.demo-bar button[aria-pressed="true"] {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--paper);
+}
+
+.demo-bar .theme {
+  margin-left: auto;
+}
+
+/* "Proposed" marks anything not in the MVP; "Scripted" marks a pause the replay invents. */
+.tag {
+  display: inline-block;
+  vertical-align: 0.15em;
+  margin-left: 6px;
+  padding: 0 6px;
+  border: 1.5px dashed var(--steel);
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 800;
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--steel);
+  white-space: nowrap;
+}
+
+.tag-scripted {
+  border-style: dotted;
+  border-color: var(--turmeric);
+  color: color-mix(in srgb, var(--turmeric) 70%, var(--ink));
+}
+
+.proposed-box {
+  border: 1.5px dashed var(--steel);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  background: var(--card);
+}
+
+.proposed-box h3 {
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.proposed-box p + p,
+.proposed-box p + ul,
+.proposed-box ul + p {
+  margin-top: 6px;
+}
+
+/* Persona guide */
+.guide {
+  border: 2px solid var(--ink);
+  border-radius: 2px;
+  padding: 12px 14px;
+  background: var(--card);
+}
+
+.guide h2 {
+  font-size: 1.125rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.guide .model {
+  margin-top: 4px;
+  font-style: italic;
+  color: var(--steel);
+}
+
+.guide ol {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guide li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 4px;
+  padding: 5px 0;
+  border-top: 1px solid var(--hair);
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+
+.guide li::before {
+  content: "○";
+  color: var(--steel);
+}
+
+.guide li.met::before {
+  content: "✓";
+  color: var(--leaf);
+  font-weight: 900;
+}
+
+.guide li.met {
+  color: var(--steel);
+}
+
+.guide .success {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  background: var(--leaf-wash);
+  font-size: 0.875rem;
+}
+
+/* "Why?" explanations: a rich tooltip's content, shown inline so it fits narrow day cards and touch. */
+.why-btn {
+  margin-left: 4px;
+  padding: 0 4px;
+  font-size: 0.75rem;
+}
+
+.why-panel {
+  grid-column: 1 / -1;
+  margin: 4px 0 6px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--leaf);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--leaf-wash);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.why-panel .calc {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+}
+
+.why-panel a {
+  color: var(--leaf);
+}
+
+.time-note {
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  color: var(--steel);
+}
+
+/* Checks and repair history */
+.checks ul {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.checks li {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--leaf-wash);
+  font-size: 0.8125rem;
+}
+
+.checks li::before {
+  content: "✓ ";
+  color: var(--leaf);
+  font-weight: 900;
+}
+
+/* Gradual change (Dieter) */
+.gradual {
+  border: 1.5px dashed var(--leaf);
+}
+
+.gradual .impact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 8px 0;
+  font-family: var(--font-data);
+  font-size: 0.8125rem;
+}
+
+.gradual .row {
+  margin-top: 8px;
+}
+
+.changed {
+  background: var(--turmeric-wash);
+  border-radius: 2px;
+}
+
+/* Store ranking evidence */
+.evidence table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 0.875rem;
+}
+
+.evidence th,
+.evidence td {
+  text-align: left;
+  padding: 4px 8px 4px 0;
+  border-bottom: 1px solid var(--hair);
+}
+
+.evidence td.num {
+  text-align: right;
+  font-family: var(--font-data);
+}
+
+.evidence tr.chosen td {
+  font-weight: 800;
+}
+
+/* Cart: leftover cue, verified stamp, estimate badge */
+.left {
+  font-family: var(--font-data);
+  font-size: 0.8125rem;
+  color: var(--steel);
+}
+
+.left.lots {
+  color: color-mix(in srgb, var(--turmeric) 70%, var(--ink));
+  font-weight: 600;
+}
+
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 2px solid var(--leaf);
+  border-radius: 2px;
+  color: var(--leaf);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: rotate(-2deg);
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--turmeric-wash);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.receipt .why-panel {
+  margin-top: 6px;
+}
+
+.replay-note {
+  margin-bottom: 12px;
+}
+
+/* Snackbar */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 10;
+  transform: translateX(-50%);
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.9375rem;
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.25);
+}
+
+.toast[hidden] {
+  display: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .demo-bar .theme {
+    margin-left: 0;
+  }
+
+  .receipt td.left-cell {
+    grid-column: 1 / -1;
+    order: 4;
+  }
+}
+
+.labels.settled .label {
+  animation: none;
+}
+
+/* Phone cart rows: item and price, then the product, then need/have and left over. */
+@media (max-width: 560px) {
+  .receipt tbody td:nth-child(1) { grid-row: 1; grid-column: 1; }
+  .receipt tbody td:nth-child(5) { grid-row: 1; grid-column: 2; }
+  .receipt tbody td:nth-child(2) { grid-row: 2; grid-column: 1 / -1; order: 0; }
+  .receipt tbody td:nth-child(3) { grid-row: 3; grid-column: 1; text-align: left; }
+  .receipt tbody td:nth-child(4) { grid-row: 3; grid-column: 2; order: 0; }
+}
