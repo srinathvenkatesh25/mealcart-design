@@ -1,7 +1,6 @@
-/* MealCart prototype. Base styles are the MVP's own (frontend/app/globals.css);
-   prototype-only additions are at the end.
+/* MealCart prototype.
 
-   MealCart — the nutrition label is the one loud thing; everything else stays quiet.
+   The nutrition label is the one loud thing; everything else stays quiet.
    Palette from an Indian kitchen: curry leaf (actions), turmeric (waiting/progress),
    chili (errors only), steel greys, cool paper. */
 
@@ -1278,45 +1277,21 @@ input[type="checkbox"] {
   margin-left: auto;
 }
 
-/* "Proposed" marks anything not in the MVP; "Scripted" marks a pause the replay invents. */
-.tag {
-  display: inline-block;
-  vertical-align: 0.15em;
-  margin-left: 6px;
-  padding: 0 6px;
-  border: 1.5px dashed var(--steel);
-  border-radius: 999px;
-  font-family: var(--font-body);
-  font-size: 0.625rem;
-  font-weight: 800;
-  line-height: 1.6;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--steel);
-  white-space: nowrap;
-}
-
-.tag-scripted {
-  border-style: dotted;
-  border-color: var(--turmeric);
-  color: color-mix(in srgb, var(--turmeric) 70%, var(--ink));
-}
-
-.proposed-box {
-  border: 1.5px dashed var(--steel);
+.panel {
+  border: 1.5px solid var(--hair);
   border-radius: var(--radius);
   padding: 12px 14px;
   background: var(--card);
 }
 
-.proposed-box h3 {
+.panel h3 {
   font-size: 1rem;
   font-weight: 900;
 }
 
-.proposed-box p + p,
-.proposed-box p + ul,
-.proposed-box ul + p {
+.panel p + p,
+.panel p + ul,
+.panel ul + p {
   margin-top: 6px;
 }
 
@@ -1439,7 +1414,7 @@ input[type="checkbox"] {
 
 /* Gradual change (Dieter) */
 .gradual {
-  border: 1.5px dashed var(--leaf);
+  border: 1.5px solid var(--leaf);
 }
 
 .gradual .impact {
@@ -1526,7 +1501,7 @@ input[type="checkbox"] {
   margin-top: 6px;
 }
 
-.replay-note {
+.fixed-note {
   margin-bottom: 12px;
 }
 
@@ -1581,4 +1556,13 @@ input[type="checkbox"] {
   .receipt tbody td:nth-child(2) { grid-row: 2; grid-column: 1 / -1; order: 0; }
   .receipt tbody td:nth-child(3) { grid-row: 3; grid-column: 1; text-align: left; }
   .receipt tbody td:nth-child(4) { grid-row: 3; grid-column: 2; order: 0; }
+}
+
+/* Material 3's 48dp touch target on touch screens. */
+@media (pointer: coarse) {
+  .btn,
+  .btn-link {
+    min-height: 48px;
+    min-width: 48px;
+  }
 }

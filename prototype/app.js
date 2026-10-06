@@ -1,6 +1,5 @@
-/* MealCart prototype: a scripted replay of a real run (data/run.js).
-   The steps, feed wording and pauses follow the MVP; timing is shortened.
-   Anything marked "Proposed" is not in the MVP yet. */
+/* MealCart prototype: a scripted run over a sample week (data/run.js).
+   Timing is shortened; nothing is sent anywhere. */
 
 "use strict";
 
@@ -25,7 +24,6 @@ const STEP = {
   intake: "Targets", plan: "Planning", solve: "Portions", validate: "Checks", repair: "Fixing",
   consolidate: "List", swap: "Swap", shop: "Instacart", model: "AI model",
 };
-const tag = (kind = "Proposed") => `<span class="tag${kind === "Scripted" ? " tag-scripted" : ""}">${kind}</span>`;
 
 // ---------- Personas (the team's three) and what each one tries ----------
 
@@ -117,13 +115,13 @@ function meet(key) {
 
 const items = () => RUN.grocery_list.items;
 const keptItems = () => items().filter((i) => !S.unticked.has(i.name));
-// Price memory: the MVP estimates from prices seen in earlier carts. Here, the recorded cart.
+// Price memory: estimates come from prices seen in the last cart.
 const lastPrice = (name) => RUN.cart.lines.filter((l) => l.grocery_item === name).reduce((s, l) => s + l.line_total_usd, 0);
 const estimate = () => keptItems().reduce((s, i) => s + lastPrice(i.name), 0);
 const budget = () => Number(S.form.budget) || null;
 const usda = (name) => RUN.usda[name];
 
-// Cooking-time floors, the same rules as the MVP's nutrition/timing.py (a subset).
+// Realistic minimum cooking times for slow foods.
 const TIME_RULES = [
   { terms: ["brown_rice"], min: 30, pc: 20 },
   { terms: ["rice"], min: 15, exclude: ["flour", "noodle", "vinegar", "bran", "milk"] },
@@ -321,7 +319,7 @@ function whyUsda(name, grams, row) {
   if (!u || !row) return "";
   const per = u.per_100g;
   return `<div class="why-panel" id="why-${esc(name)}">
-    <b>${esc(u.description)}</b>, USDA FoodData Central #${u.fdc_id} ${tag()}
+    <b>${esc(u.description)}</b>, USDA FoodData Central #${u.fdc_id}
     <span class="calc">${Math.round(grams)} g × ${per.calories} kcal / 100 g = ${kcal(row.calories)} kcal</span>
     <span class="calc">${Math.round(grams)} g × ${per.protein_g} g protein / 100 g = ${row.protein_g.toFixed(1)} g</span>
     Raw weight. <a href="https://fdc.nal.usda.gov/food-details/${u.fdc_id}/nutrients" target="_blank" rel="noopener">See the USDA entry</a>
@@ -368,7 +366,7 @@ function mealHtml(day, meal, nut, mi) {
         <ul class="ingredients">${ingredients}</ul>
         ${meal.steps.length ? `<ol class="steps">${meal.steps.map((s) => `<li>${esc(s.replace(/^\d+\.\s*/, ""))}</li>`).join("")}</ol>` : ""}
         ${meal.equipment_used.length ? `<p class="equipment">Uses ${esc(meal.equipment_used.map(nice).join(", "))}</p>` : ""}
-        <p class="time-note">${esc(timeNote)} ${tag()}</p>
+        <p class="time-note">${esc(timeNote)}</p>
       </div>
     </details>
     ${canSwap && S.swapping !== key ? `<button type="button" class="btn btn-link swap-trigger" data-swap-open="${esc(key)}" data-k="swapbtn-${esc(key)}" aria-label="Swap ${esc(day)} ${SLOT[meal.slot].toLowerCase()}: ${esc(meal.title)}">Swap</button>` : ""}
@@ -395,8 +393,8 @@ function labelHtml(day) {
 function checksHtml() {
   const gates = ["Calories within ±5% every day", "Protein within ±10 g", "No mushrooms or mayonnaise", "Halal",
     "Every meal ≤ 30 min", "Only your equipment", "Steps for every meal", "Variety across the week"];
-  return `<section class="proposed-box checks" aria-labelledby="checks-h">
-    <h3 id="checks-h">How this plan was checked ${tag()}</h3>
+  return `<section class="panel checks" aria-labelledby="checks-h">
+    <h3 id="checks-h">How this plan was checked</h3>
     <p class="fine">Passed every check on the first try, so no repair rounds were needed. When a day fails, its repair round and what changed would be listed here.</p>
     <ul>${gates.map((x) => `<li>${x}</li>`).join("")}</ul>
   </section>`;
@@ -406,12 +404,12 @@ function gradualHtml() {
   const ex = RUN.gradual_example;
   if (S.gradual === "dismissed") return "";
   if (S.gradual === "accepted") {
-    return `<section class="proposed-box gradual" aria-live="polite"><h3>This week's small change is in ${tag()}</h3>
+    return `<section class="panel gradual" aria-live="polite"><h3>This week's small change is in</h3>
       <p>Monday lunch now uses brown rice. One change a week; the next suggestion comes with next week's plan.</p></section>`;
   }
   const d = (k) => ex.after[k] - ex.before[k];
-  return `<section class="proposed-box gradual" aria-labelledby="gradual-h">
-    <h3 id="gradual-h">One small change this week ${tag()}</h3>
+  return `<section class="panel gradual" aria-labelledby="gradual-h">
+    <h3 id="gradual-h">One small change this week</h3>
     <p>Brown rice instead of white in <b>${esc(ex.day)} lunch</b> (${esc(ex.meal)}). Same meal, same portion.</p>
     <div class="impact"><span>Calories ${signed(d("calories"))}</span><span>Protein ${signed(d("protein_g"), " g")}</span>
       <span>Carbs ${signed(d("carbs_g"), " g")}</span><span>Fat ${signed(d("fat_g"), " g")}</span></div>
@@ -436,7 +434,7 @@ function groceryHtml() {
         ${i.substitutes.length ? `<span class="grocery-subs">or ${esc(i.substitutes.map(nice).join(", "))}</span>` : ""}
       </li>`;
     }).join("")}</ul>
-    <p class="fine" style="margin-top:8px">"est. weight" ${tag()} marks produce sold by count, where the weight is an estimate.</p>
+    <p class="fine" style="margin-top:8px">"est. weight" marks produce sold by count, where the weight is an estimate.</p>
   </section>`;
 }
 
@@ -458,9 +456,9 @@ function reviewHtml() {
 }
 
 function evidenceHtml() {
-  return `<section class="proposed-box evidence" aria-labelledby="ev-h">
-    <h3 id="ev-h">Why Kroger ${tag()}</h3>
-    <p class="fine">Stores ranked by how many of your hard-to-find items they stock. The MVP writes this in the activity feed; this card shows it at a glance. Illustrative numbers.</p>
+  return `<section class="panel evidence" aria-labelledby="ev-h">
+    <h3 id="ev-h">Why Kroger</h3>
+    <p class="fine">Stores ranked by how many of your hard-to-find items they stock. The activity feed lists the same counts as they come in.</p>
     <table><thead><tr><th>Store</th><th class="num">Hard-to-find items</th></tr></thead><tbody>
       <tr class="chosen"><td>Kroger ✓</td><td class="num">6 / 6</td></tr>
       <tr><td>Walmart</td><td class="num">5 / 6</td></tr>
@@ -485,7 +483,7 @@ function whyProduct(l, cov) {
   const fewer = l.packs > 1 ? `${l.packs - 1} pack${l.packs > 2 ? "s" : ""} would be ${g(l.pack_grams * (l.packs - 1))}, short of what the week needs.` : "One pack covers it.";
   return `<div class="why-panel">Needed <b>${g(cov.grams_needed)}</b> for the week. ${esc(l.pack_size)} × ${l.packs} = ${g(have)}. ${fewer}
     <span class="calc">${usd(l.unit_price_usd)} each · ${usd(l.line_total_usd)}</span>
-    In the app, the picker's own reason (it already returns one) would appear here.</div>`;
+    </div>`;
 }
 
 function cartHtml() {
@@ -493,7 +491,7 @@ function cartHtml() {
   if (S.attention) {
     const ex = RUN.needs_attention_example;
     return `<section class="hero hero-run"><h1>Your cart needs a look</h1>
-        <p>At ${esc(ex.store)} · ${usd(ex.subtotal_usd)}. A different recorded run, where one store was missing items.</p></section>
+        <p>At ${esc(ex.store)} · ${usd(ex.subtotal_usd)}. One store was missing some items.</p></section>
       <div class="callout"><b>${ex.missing.length} items weren't found.</b> Everything else is in the cart. Add these in Instacart, or start a new plan.</div>
       <table class="receipt"><thead><tr><th>For</th><th class="num">Need</th><th class="num">In cart</th></tr></thead><tbody>
         ${ex.missing.map((m) => `<tr class="is-missing"><td><span class="tick">✗</span>${esc(nice(m.item))}</td><td class="num mono">${g(m.grams_needed)}</td><td class="num mono">0 g</td></tr>`).join("")}
@@ -519,12 +517,12 @@ function cartHtml() {
   return `
     <section class="hero hero-run"><h1>Your cart is ready</h1>
       <p>At ${esc(c.store)} · ${usd(c.subtotal_usd)}${b ? ` · ${c.subtotal_usd <= b ? `within your ${usd(b)} budget` : `<span class="over">${usd(c.subtotal_usd - b)} over budget</span>`}` : ""}</p>
-      <p style="margin-top:10px"><span class="stamp">✓ Verified against your cart</span> ${tag()}</p></section>
+      <p style="margin-top:10px"><span class="stamp">✓ Verified against your cart</span></p></section>
     ${S.zipMismatch ? `<div class="callout">Instacart is set to deliver to ${RUN.spec.zip_code}, not your ZIP ${esc(S.form.zip)}. These stores and prices are for ${RUN.spec.zip_code}.</div>` : ""}
-    ${changes ? `<p class="notice replay-note">This prototype replays the recorded cart, so changes you made to the plan aren't reflected here. In the app, the cart is built from the list you approved.</p>` : ""}
+    ${changes ? `<p class="notice fixed-note">In this prototype the cart is fixed, so changes you made to the plan aren't reflected here.</p>` : ""}
     <section aria-labelledby="cart-h">
       <div class="section-head"><h2 id="cart-h">Every item, checked</h2>
-        <p>MealCart read the cart back from Instacart and compared it with your list. "Left over" ${tag()} is what the week won't use.</p></div>
+        <p>MealCart read the cart back from Instacart and compared it with your list. "Left over" is what the week won't use.</p></div>
       <table class="receipt">
         <thead><tr><th>For</th><th>In your cart</th><th class="num">Need / have</th><th class="num">Left over</th><th class="num">Price</th></tr></thead>
         <tbody>${lines}</tbody>
@@ -571,20 +569,19 @@ function questionHtml() {
       <div class="row"><button type="button" class="btn btn-primary" data-approve data-k="approve">Fill my cart</button>
         <button type="button" class="btn btn-quiet" data-cancel>Cancel this plan</button></div>`;
   } else if (q.kind === "email_code") {
-    title = `Enter your Instacart code ${tag("Scripted")}`;
+    title = `Enter your Instacart code`;
     body = `<p>Instacart sent a code to your email. What is it?</p>
       <form data-answer="code"><label class="field"><span>Code</span><input data-k="code" inputmode="numeric" autocomplete="one-time-code" placeholder="any 6 digits"></label>
       <button class="btn btn-primary" type="submit">Send code</button>
       <p class="fine">Typed straight into Instacart in the Chrome window. MealCart doesn't save it.</p></form>`;
   } else if (q.kind === "cart_clear_approval") {
-    title = `Your cart already has items ${tag("Scripted")}`;
+    title = `Your cart already has items`;
     body = `<p>Your Kroger cart already has 2 items: Kroger® 2% Reduced Fat Milk, Simple Truth Organic® Baby Spinach. Clear it first?</p>
       <div class="row"><button type="button" class="btn btn-primary" data-answer-btn="clear" data-k="clear">Empty it first</button>
         <button type="button" class="btn btn-quiet" data-answer-btn="clear">Keep those items</button></div>`;
   } else if (q.kind === "substitution_approval") {
-    title = `Approve a substitute ${tag("Scripted")}`;
+    title = `Approve a substitute`;
     body = `<p>No store has rolled oats. Use Kroger® Quick Oats (quick_oats) instead? It breaks the plan's checks: Tuesday calories 1,812 (target 1,850 ±5%).</p>
-      <p class="fine">The recorded run found rolled oats, so either answer continues the same way.</p>
       <div class="row"><button type="button" class="btn btn-primary" data-answer-btn="sub" data-k="sub">Use substitute</button>
         <button type="button" class="btn btn-quiet" data-answer-btn="sub">Skip it</button></div>`;
   }
@@ -665,7 +662,7 @@ function submitSpec() {
 function doSwap(key, form) {
   const [day, slot] = key.split("|");
   if (key !== "Monday|dinner") {
-    S.swapNote = "This prototype replays one recorded swap. Try Monday dinner.";
+    S.swapNote = "In this prototype, only Monday dinner can be swapped. Try that one.";
     render();
     return;
   }
@@ -751,7 +748,7 @@ document.addEventListener("click", (e) => {
   if ("approve" in d) { startShopping(); render(); return; }
   if ("cancel" in d) { reset(); render(); toast("Plan cancelled. Nothing was bought."); return; }
   if (d.answerBtn) { continueShopping(d.answerBtn); render(); return; }
-  if ("handoff" in d) { meet("cart"); toast("In the app this opens Instacart in your browser. You review each store's cart and check out there."); return; }
+  if ("handoff" in d) { meet("cart"); toast("This opens Instacart in your browser. You review each store's cart and check out there."); return; }
   if ("restart" in d) { jump("J1"); return; }
   if (t.id === "theme") {
     const dark = !currentlyDark();

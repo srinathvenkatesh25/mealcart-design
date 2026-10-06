@@ -2,32 +2,21 @@
 
 MealCart plans a week of meals to a calorie and protein target, checks every day against USDA
 nutrition data, and fills the user's Instacart cart. It **stops at a filled, verified cart: the
-person always checks out themselves.** This document specifies the experience of the working MVP
-and the additions we propose, for three personas.
+person always checks out themselves.** This document specifies the MealCart experience for three
+personas.
 
-- **MVP source code:** [github.com/srinathvenkatesh25/mealcart.ai](https://github.com/srinathvenkatesh25/mealcart.ai/tree/1c3682d)
-  (all code links below are pinned to commit `1c3682d`).
 - **Interactive prototype:** [srinathvenkatesh25.github.io/mealcart-design/prototype/](https://srinathvenkatesh25.github.io/mealcart-design/prototype/)
   (files in [`prototype/`](prototype/)).
 
-### How to read this document
-
-Every feature is marked:
-
-- **Built**: in the MVP today, with a link to the code.
-- **Proposed**: designed here, demonstrated in the prototype, not yet in the MVP. Where the data a
-  Proposed feature needs already exists in the MVP's backend, we say so.
-
-Numbers in the examples come from a real MealCart run (`run_b91aa67527f8`: 7 days of Mexican
-meals at 1,850 kcal and 80 g protein a day, a $80 budget, and a verified 14-item Kroger cart of
-$54.50).
+Numbers in the examples come from a sample week: 7 days of Mexican meals at 1,850 kcal and 80 g
+protein a day, an $80 budget, and a 14-item Kroger cart of $54.50.
 
 ---
 
 ## 1. Personas and mental models
 
 These are our team's three personas, with needs, tasks and success criteria exactly as defined.
-For each we add the mental model the design must respect and where MealCart meets each task.
+For each we add the mental model the design must respect and how MealCart supports each task.
 
 ### 1.1 The Always-on-the-Go Planner
 
@@ -38,11 +27,11 @@ For each we add the mental model the design must respect and where MealCart meet
 | **Success** | Spends less time planning and preparing meals. Receives meals that fit their schedule. Follows the plan with less decision fatigue. |
 | **Mental model** | *"An assistant that does the planning so I don't have to think."* Expects a sensible default on the first try, and a one-sentence way to change things. Won't read long explanations. |
 
-| Task | Built | Proposed |
-|---|---|---|
-| Quick, realistic weekly plan | A full week in one AI call, then portions sized by a solver ([`planner.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/planner/planner.py), [`solver.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/nutrition/solver.py)) | — |
-| Fast-prep meals | Max-minutes-per-meal limit; realistic cooking-time floors (raw rice and chicken ≥ 15 min, dried beans ≥ 50) raise optimistic AI times ([`timing.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/nutrition/timing.py)) | Show *why* a time was raised in the meal itself (today only the activity feed says so) |
-| Adjust conversationally | "Describe in words" input; **Swap a meal** with a plain-language reason ([`nodes.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/graph/nodes.py) `swap`) | — |
+| Task | How MealCart supports it |
+|---|---|
+| Quick, realistic weekly plan | A full week planned in one step, with portions sized to hit the targets |
+| Fast-prep meals | A max-minutes-per-meal limit; realistic cooking-time minimums (raw rice and chicken ≥ 15 min, dried beans ≥ 50) correct optimistic times, and the meal says why its time was checked |
+| Adjust conversationally | "Describe in words" input; **Swap a meal** with a plain-language reason |
 
 ### 1.2 The Budget-Savvy Shopper
 
@@ -53,11 +42,11 @@ For each we add the mental model the design must respect and where MealCart meet
 | **Success** | Keeps the grocery cart within budget. Avoids unnecessary purchases. Uses more of what is purchased and wastes less food. |
 | **Mental model** | *"A cart builder I audit before money is spent."* Wants to see the total against the budget **before** shopping, and every line after. Distrusts anything that adds items silently. |
 
-| Task | Built | Proposed |
-|---|---|---|
-| Set a weekly budget | Budget field; estimate vs budget on the approval card (from earlier cart prices); subtotal vs budget on the cart review ([`QuestionCard.tsx`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/frontend/components/QuestionCard.tsx), [`CartReview.tsx`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/frontend/components/CartReview.tsx)) | — |
-| Optimize ingredients across meals | Planner told to reuse ingredients; the week is consolidated into one list (103 ingredient lines → 25 items in testing) ([`consolidator.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/shopping/consolidator.py)) | — |
-| Approve an affordable, **low-waste** cart | Pantry list never bought; untick items you have; cart verified line by line ([`verify.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/shopping/verify.py)) | **Leftover cue**: show how much of each pack the week won't use. The data already exists: in the sample run the plan needs **40 g of peanut butter but the cart buys 454 g**, and 25 g of spinach becomes a 170 g bag. |
+| Task | How MealCart supports it |
+|---|---|
+| Set a weekly budget | Budget field; estimate vs budget on the approval card (from earlier cart prices); subtotal vs budget on the cart review |
+| Optimize ingredients across meals | Meals reuse ingredients; the week is consolidated into one list (103 ingredient lines → 25 items in a typical week) |
+| Approve an affordable, **low-waste** cart | Pantry items never bought; untick items you have; cart verified line by line; a **leftover cue** shows how much of each pack the week won't use (the sample week needs **40 g of peanut butter but buys a 454 g jar**, and 25 g of spinach becomes a 170 g bag) |
 
 ### 1.3 The On-and-Off Dieter
 
@@ -68,25 +57,25 @@ For each we add the mental model the design must respect and where MealCart meet
 | **Success** | Makes manageable changes without restrictive dieting. Follows the plan more consistently. |
 | **Mental model** | *"A coach that nudges, not a strict diet."* Gives up when a plan feels foreign or punishing; needs to see that the numbers are honest, not to be lectured by them. |
 
-| Task | Built | Proposed |
-|---|---|---|
-| Healthier meals, familiar foods | Cuisines, main protein, dislikes; restrictions spelled out to the AI and checked in code ([`validator.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/nutrition/validator.py)) | — |
-| Portions and balance | Calories ±5% and protein ±10 g per day, sized by a solver; per-meal and per-ingredient calories and macros shown | "Why this number?": the USDA entry behind each ingredient |
-| Healthier alternatives, **gradually** | Swap a meal (user-initiated) | **Gradual-change mode**: one small suggested swap per week, e.g. white rice → brown rice in one lunch (+1.6 kcal, −5.2 g carbs, computed with the MVP's own validator). MealCart doesn't track fiber yet, so the main benefit of whole grains isn't visible in its numbers; the suggestion says so. |
+| Task | How MealCart supports it |
+|---|---|
+| Healthier meals, familiar foods | Cuisines, main protein and dislikes; dietary restrictions both requested and checked |
+| Portions and balance | Calories ±5% and protein ±10 g per day; per-meal and per-ingredient calories and macros; **Why?** shows the USDA entry behind each number |
+| Healthier alternatives, **gradually** | Swap a meal yourself, or a **gradual-change mode**: one small suggested swap per week, e.g. white rice → brown rice in one lunch (+1.6 kcal, −5.2 g carbs). MealCart doesn't track fiber yet, so the main benefit of whole grains isn't visible in its numbers; the suggestion says so. |
 
 ### 1.4 Decision rights: who final-signs
 
-| Decision | Final say | Where | Status |
-|---|---|---|---|
-| Approve the plan and grocery list before any shopping | **User** | Approval card | Built |
-| Swap a meal; untick an item; cancel the plan | **User** | Day cards, grocery list, approval card | Built |
-| A substitute that breaks the plan's checks | **User** | Substitution question | Built |
-| Empty a cart that already has items | **User** | Clear-cart question | Built |
-| Sign-in codes, passwords, CAPTCHAs | **User** (answers pass straight through; never stored) | Question cards | Built |
-| **Checkout and payment** | **User only, outside MealCart** (no checkout code path; the browser blocks checkout pages) | Instacart app | Built |
-| Portion sizes, validation, up to 3 automatic repairs | System, within the user's targets and rules | — | Built |
-| Store ranking, product picks, pack counts, up to 3 stores | System, within the approved list; substitutes that break the plan escalate to the user | — | Built |
-| Weekly healthier-swap suggestion | System **suggests**, user accepts or dismisses | Plan view | Proposed |
+| Decision | Final say | Where |
+|---|---|---|
+| Approve the plan and grocery list before any shopping | **User** | Approval card |
+| Swap a meal; untick an item; cancel the plan | **User** | Day cards, grocery list, approval card |
+| A substitute that breaks the plan's checks | **User** | Substitution question |
+| Empty a cart that already has items | **User** | Clear-cart question |
+| Sign-in codes, passwords, CAPTCHAs | **User** (answers pass straight through; never stored) | Question cards |
+| **Checkout and payment** | **User only, outside MealCart** (MealCart has no way to reach checkout) | Instacart app |
+| Portion sizes, validation, up to 3 automatic repairs | System, within the user's targets and rules | — |
+| Store ranking, product picks, pack counts, up to 3 stores | System, within the approved list; substitutes that break the plan escalate to the user | — |
+| Weekly healthier-swap suggestion | System **suggests**, user accepts or dismisses | Plan view |
 
 The rule behind the table: **the system may decide anything that is reversible and checked; the
 user signs anything that spends money, changes what they'll eat beyond their rules, or touches
@@ -96,29 +85,29 @@ their account.**
 
 Points where a persona asks "why?", and what answers it.
 
-| Moment | Persona | Answered by | Status |
-|---|---|---|---|
-| "Do these meals really add up to my target?" | Dieter | Per-meal calories and protein on every meal; per-ingredient numbers when opened; a rounding note | Built |
-| "Where does this number come from?" | Dieter | **Why?** on an ingredient: the USDA entry, its per-100 g values, and the arithmetic (e.g. 100 g × 120 kcal/100 g = 120 kcal) | Proposed (USDA id and description already cached) |
-| "Why did this meal's time change?" | Planner | Cooking-time note on the meal | Proposed UI (Built logic) |
-| "Was this plan fixed by the system?" | Dieter, Shopper | Repair history: what the checks found and what changed | Proposed (validator notes exist) |
-| "Why this product, this store?" | Shopper | **Why this product?**: the picker's stated reason; store-ranking evidence (which hard-to-find items each store stocks) | Proposed (the picker already returns a `reason`; ranking is in the feed) |
-| "Is the cart really what I approved?" | Shopper | Cart review: needed vs in cart for every item, per store | Built |
-| "Which AI answered, and how much did it use?" | All | Model-switch lines in the feed; AI usage line | Built |
+| Moment | Persona | Answered by |
+|---|---|---|
+| "Do these meals really add up to my target?" | Dieter | Per-meal calories and protein on every meal; per-ingredient numbers when opened; a rounding note |
+| "Where does this number come from?" | Dieter | **Why?** on an ingredient: the USDA entry, its per-100 g values, and the arithmetic (e.g. 100 g × 120 kcal/100 g = 120 kcal) |
+| "Why did this meal's time change?" | Planner | Cooking-time note on the meal |
+| "Was this plan fixed by the system?" | Dieter, Shopper | Repair history: what the checks found and what changed |
+| "Why this product, this store?" | Shopper | **Why this product?**: the picker's stated reason; store-ranking evidence (which hard-to-find items each store stocks) |
+| "Is the cart really what I approved?" | Shopper | Cart review: needed vs in cart for every item, per store |
+| "Which AI answered, and how much did it use?" | All | Model-switch lines in the feed; AI usage line |
 
 ### 1.6 Trust-calibration cues
 
-| Cue | Kind | Status |
-|---|---|---|
-| Per-meal values shown rounded, with a note that totals can differ by a point or two | Uncertainty | Built |
-| "Still off: Monday, Sunday" when portions can't reach the targets; those days go to repair | Uncertainty | Built |
-| Price estimate labelled as an estimate from earlier carts | Uncertainty | Built (badge Proposed) |
-| "Estimated weight" on loose produce sold by count (onion ≈ 150 g) | Uncertainty | Proposed (estimates exist in `packs.py`) |
-| A human check stops the run with an explanation rather than reporting items as unavailable | Uncertainty | Built |
-| ZIP mismatch warning: Instacart is delivering somewhere else | Provenance | Built |
-| Every number traces to USDA FoodData Central | Provenance | Built (link per ingredient Proposed) |
-| Cart read back from Instacart and compared with the list | Provenance | Built ("verified" stamp Proposed) |
-| Which AI model answered, switches, and calls used | Provenance | Built |
+| Cue | Kind |
+|---|---|
+| Per-meal values shown rounded, with a note that totals can differ by a point or two | Uncertainty |
+| "Still off: Monday, Sunday" when portions can't reach the targets; those days go to repair | Uncertainty |
+| Price estimate badged as an estimate from earlier carts | Uncertainty |
+| "Estimated weight" on loose produce sold by count (onion ≈ 150 g) | Uncertainty |
+| A human check stops the run with an explanation rather than reporting items as unavailable | Uncertainty |
+| ZIP mismatch warning: Instacart is delivering somewhere else | Provenance |
+| Every number traces to USDA FoodData Central | Provenance |
+| Cart read back from Instacart and compared with the list | Provenance |
+| Which AI model answered, switches, and calls used | Provenance |
 
 ---
 
@@ -150,13 +139,13 @@ flowchart TD
 flowchart TD
     A[Week shown as nutrition labels<br/>day totals + every meal's kcal and protein] --> B{Question?}
     B -->|numbers| C[Open meal: macro strip,<br/>per-ingredient numbers]
-    C -.Proposed.-> C2[Why? USDA entry + arithmetic]
+    C --> C2[Why? USDA entry + arithmetic]
     B -->|dislike a meal| D[Swap: say why,<br/>tick ingredients to avoid]
     D --> E[One AI call replaces that meal<br/>only that day re-sized and re-checked]
     E --> A
     B -->|already have an item| F[Untick on the grocery list]
-    B -.Proposed, Dieter.-> G[Weekly gradual swap suggestion<br/>accept or dismiss]
-    B -.Proposed, Shopper.-> H[Estimated-weight badges<br/>on loose produce]
+    B -->|Dieter| G[Weekly gradual swap suggestion<br/>accept or dismiss]
+    B -->|Shopper| H[Estimated-weight badges<br/>on loose produce]
     A --> I((J3: approve))
 ```
 
@@ -221,7 +210,7 @@ flowchart TD
     E --> F[You check out each store's cart<br/>MealCart never pays]
 ```
 
-### Failure flows (all Built)
+### Failure flows
 
 | Situation | What the person sees | What happens |
 |---|---|---|
@@ -269,9 +258,8 @@ Low-fidelity layouts; the prototype shows them at full fidelity.
 │ │            [Swap]  ▸ open       │ │                │ │ AI model …            │
 │ └─────────────────┘ └────────────┘ └────────────────┘ └───────────────────────┘
 │ Grocery list (untick what you have)                                         │
-│ ☑ chicken breast ≈ 2.25 lb   ☑ onion 8 × onion (≈ 2.4 lb) [est. weight]ᴾ      │
+│ ☑ chicken breast ≈ 2.25 lb   ☑ onion 8 × onion (≈ 2.4 lb) [est. weight]       │
 └────────────────────────────────────────────────────────────────────────────┘
-ᴾ Proposed
 ```
 
 **Meal opened**
@@ -280,8 +268,8 @@ Low-fidelity layouts; the prototype shows them at full fidelity.
 │ ┌ CALORIES  PROTEIN   CARBS   FAT ┐                       │
 │ │ 626       30 g      (grey)  (grey)│                      │
 │ └─────────────────────────────────┘                       │
-│ 100 g chicken breast        120 kcal · 23 g   [Why?]ᴾ     │
-│ 330 g potato                254 kcal ·  7 g   [Why?]ᴾ     │
+│ 100 g chicken breast        120 kcal · 23 g   [Why?]      │
+│ 330 g potato                254 kcal ·  7 g   [Why?]      │
 │ 1. … steps …                                              │
 │ Uses stove, microwave                         [Swap]      │
 ```
@@ -300,10 +288,10 @@ Low-fidelity layouts; the prototype shows them at full fidelity.
 **Cart review**
 ```
 ┌ Your cart is ready · At Kroger · $54.50 · within your $80 budget ─────────┐
-│ FOR            IN YOUR CART                   NEED / HAVE  LEFT OVERᴾ PRICE │
+│ FOR            IN YOUR CART                   NEED / HAVE  LEFT OVER  PRICE │
 │ ✓ banana       Fresh Bunch of Bananas × 1      340 / 1361 g  1021 g    $1.77 │
 │ ✓ peanut butter Creamy Peanut Butter × 1        40 /  454 g   414 g    $2.49 │
-│                [Why this product?]ᴾ                                        │
+│                [Why this product?]                                         │
 │ …                                                                          │
 │ Subtotal before fees                                              $54.50   │
 │ AI used: 4 calls · free tier · gemini-3.6-flash ×2, gpt-oss-120b ×2       │
@@ -313,17 +301,17 @@ Low-fidelity layouts; the prototype shows them at full fidelity.
 
 ### 3.2 Input controls
 
-| Control | Behaviour | Status |
-|---|---|---|
-| Calories and protein | Large numeric fields styled as the top of a nutrition label; the only gated targets | Built |
-| ZIP code | Empty, required, 5 digits only (letters stripped as typed); server rejects anything else | Built |
-| Budget, days, max minutes | Numeric with units; budget optional | Built |
-| Dislikes, allergies, cuisines, pantry | Comma-separated text, split into lists on submit | Built |
-| Restrictions, equipment | Filter chips | Built |
-| Effort, skill | Selects | Built |
-| Describe in words | Free text, parsed into the same preferences (one AI call); must include the ZIP | Built |
-| Swap | Reason (optional) + "never use again" chips built from that meal's ingredients | Built |
-| Login code | One-time-code field, numeric keypad on phones | Built |
+| Control | Behaviour |
+|---|---|
+| Calories and protein | Large numeric fields styled as the top of a nutrition label; the only gated targets |
+| ZIP code | Empty, required, 5 digits only (letters stripped as typed); server rejects anything else |
+| Budget, days, max minutes | Numeric with units; budget optional |
+| Dislikes, allergies, cuisines, pantry | Comma-separated text, split into lists on submit |
+| Restrictions, equipment | Filter chips |
+| Effort, skill | Selects |
+| Describe in words | Free text, parsed into the same preferences (one AI call); must include the ZIP |
+| Swap | Reason (optional) + "never use again" chips built from that meal's ingredients |
+| Login code | One-time-code field, numeric keypad on phones |
 
 ### 3.3 Streaming outputs
 
@@ -409,10 +397,10 @@ it lets the nutrition-label cards read as labels, not as cards imitating them.
 | Restrictions, equipment | Filter chips | |
 | Form fields | Outlined text fields | Targets use a deliberate label variant (4.6) |
 | Question card | Outlined card with tertiary emphasis | A modal dialog was rejected: it would hide the plan the person is deciding about |
-| Why? explanations (Proposed) | Rich tooltip content | Opens on click and expands inline under the number, so it works on touch and on narrow day cards |
+| Why? explanations | Rich tooltip content | Opens on click and expands inline under the number, so it works on touch and on narrow day cards |
 | Activity feed | List with dividers | |
 | Planning placeholder, Working… | Progress indicators (indeterminate) | |
-| Leftover, estimate, verified badges (Proposed) | Badges / assist chips | |
+| Leftover, estimate, verified badges | Badges / assist chips | |
 | Cart review | (no M3 data table) | M3 has no data-table component; we use a semantic HTML table with M3 tokens, dividers and type roles |
 | Steps 1–4 in the header | (no M3 stepper) | A custom step indicator; the current step uses tertiary, completed steps primary |
 
@@ -432,9 +420,8 @@ it lets the nutrition-label cards read as labels, not as cards imitating them.
 - Live regions: the feed is `aria-live="polite"`; the question card is `aria-live="assertive"`.
 - `prefers-reduced-motion` disables all animation.
 - Every control is reachable by keyboard; Swap becomes visible on keyboard focus.
-- **Gap to fix:** M3 recommends 48 × 48 dp touch targets; MealCart's buttons are 40 px tall and
-  the Swap and Why? text buttons are smaller. Proposed: raise touch targets to 48 px on
-  coarse pointers.
+- **Touch targets:** M3 recommends 48 × 48 dp. Buttons are 40 px tall on desktop and grow to
+  48 px on touch screens, including the Swap and Why? text buttons.
 
 ### 4.6 Deliberate deviations
 
@@ -446,66 +433,13 @@ it lets the nutrition-label cards read as labels, not as cards imitating them.
 
 ---
 
-## 5. Traceability: no orphan features
-
-Every UI element serves at least one persona task. The second table checks the reverse.
-
-### 5.1 UI element → persona task → MVP source
-
-| # | UI element | Persona task(s) served | MVP source | Status |
-|---|---|---|---|---|
-| 1 | Calories and protein targets | Dieter: portions and balance · Planner: realistic plan | [`SpecForm.tsx`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/frontend/components/SpecForm.tsx), [`solver.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/nutrition/solver.py) | Built |
-| 2 | Describe in words | Planner: adjust conversationally | `SpecForm.tsx`, [`intake.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/intake/intake.py) | Built |
-| 3 | Max minutes, effort, skill, equipment | Planner: fast-prep meals | `SpecForm.tsx`, `validator.py` | Built |
-| 4 | Cuisines, main protein | Dieter: familiar foods | `SpecForm.tsx`, [`prompts.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/planner/prompts.py) | Built |
-| 5 | Dislikes, allergies, restriction chips | Dieter: familiar foods · Planner: accessible ingredients | `SpecForm.tsx`, [`maps.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/nutrition/maps.py) | Built |
-| 6 | Pantry field | Shopper: avoid unnecessary purchases | `SpecForm.tsx`, `consolidator.py` | Built |
-| 7 | Weekly budget | Shopper: set a weekly budget | `SpecForm.tsx` | Built |
-| 8 | ZIP field and mismatch warning | Shopper: approve an affordable cart (right store and prices) | [`models.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/models.py), [`shopper.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/shopping/shopper.py) | Built |
-| 9 | Live activity feed | Planner: less time planning (see progress, not wait blind) | [`ActivityFeed.tsx`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/frontend/components/ActivityFeed.tsx), [`useRun.ts`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/frontend/lib/useRun.ts) | Built |
-| 10 | Nutrition-label day cards | Dieter: portions and balance | [`PlanView.tsx`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/frontend/components/PlanView.tsx) | Built |
-| 11 | Per-meal and per-ingredient numbers | Dieter: portions and balance | `PlanView.tsx`, `validator.py` | Built |
-| 12 | Cooking-time note on the meal | Planner: meals that fit their schedule | `timing.py` | Built logic; note in meal Proposed |
-| 13 | Swap a meal (reason + avoid) | Planner: adjust conversationally · Dieter: alternatives | `PlanView.tsx`, `nodes.py` | Built |
-| 14 | Grocery list with untick | Shopper: optimize ingredients · avoid unnecessary purchases | [`GroceryList.tsx`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/frontend/components/GroceryList.tsx) | Built |
-| 15 | Approval card with estimate vs budget | Shopper: review and approve within budget | `QuestionCard.tsx` | Built |
-| 16 | Questions: code, CAPTCHA, substitute, clear cart | Shopper: approve the cart · all: decision rights | `QuestionCard.tsx`, [`registry.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/graph/registry.py) | Built |
-| 17 | Cart review, per store, needed vs in cart | Shopper: review and approve the cart · keep within budget | `CartReview.tsx`, `verify.py` | Built |
-| 18 | AI usage line and model-switch lines | All: trust what happened | [`UsageLine.tsx`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/frontend/components/UsageLine.tsx), [`llm.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/planner/llm.py) | Built |
-| 19 | Why? USDA provenance | Dieter: trust the balance shown | [`usda.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/nutrition/usda.py) (id and description cached) | Proposed |
-| 20 | Why this product? | Shopper: approve the cart | `shopper.py` (`Pick.reason` returned, not shown) | Proposed |
-| 21 | Leftover cue | Shopper: low-waste cart · uses more of what is bought | `verify.py` (coverage data) | Proposed |
-| 22 | Weekly gradual swap suggestion | Dieter: introduce alternatives gradually | `validator.py` (impact computed) | Proposed |
-| 23 | Repair history | Dieter, Shopper: trust the plan | `validator.py` notes | Proposed |
-| 24 | Estimate and estimated-weight badges | Shopper: keep within budget (know what's uncertain) | [`packs.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/shopping/packs.py) | Proposed |
-| 25 | Open Instacart hand-off | All: decision rights (you pay) | `CartReview.tsx`, [`guard.py`](https://github.com/srinathvenkatesh25/mealcart.ai/blob/1c3682d/backend/app/shopping/guard.py) | Built |
-
-### 5.2 Persona task → UI elements (the reverse check)
-
-| Persona task | UI elements |
-|---|---|
-| Planner: generate a quick, realistic weekly plan | 1, 9, 12 |
-| Planner: find fast-prep meals with accessible ingredients | 3, 5, 12 |
-| Planner: adjust meals conversationally | 2, 13 |
-| Shopper: set a weekly grocery budget | 7, 15, 24 |
-| Shopper: optimize ingredients across multiple meals | 14 |
-| Shopper: review and approve an affordable, low-waste cart | 8, 15, 16, 17, 20, 21 |
-| Dieter: build healthier meals around familiar foods | 4, 5, 10 |
-| Dieter: improve portions and nutritional balance | 1, 10, 11, 19 |
-| Dieter: introduce healthier alternatives gradually | 13, 22 |
-
-Every task has at least one element, and every element serves a task.
-
----
-
-## 6. Open questions and risks
+## 5. Open questions and risks
 
 | Risk or question | Notes |
 |---|---|
-| Instacart's terms discourage automated access | Personal, human-paced use; one account; no checkout; a hidden browser can be flagged as a bot, so `visible` mode is available |
-| Free AI quotas | About 20 requests per Gemini model per day; runs fall back to Groq, which is slower |
+| Instacart's terms discourage automated access | Personal, human-paced use; one account; no checkout; a hidden browser can be flagged as a bot, so a visible-browser mode is needed |
+| Free AI quotas | Free tiers allow only a few runs a day; falling back across models keeps runs going but slower |
 | Single user, local only | No sign-in; not reachable from other devices by design |
 | Fiber and micronutrients aren't tracked | Limits how "healthier" can be shown for the Dieter (gradual swaps state this) |
 | Leftover cue could push buying smaller, pricier packs | The cue should show cost per used gram, not just waste |
-| Touch-target size | Below M3's 48 dp recommendation (4.5) |
-| Proposed features need user testing | Especially whether Why? explanations reduce or add decision fatigue for the Planner |
+| Explanations need user testing | Especially whether Why? explanations reduce or add decision fatigue for the Planner |

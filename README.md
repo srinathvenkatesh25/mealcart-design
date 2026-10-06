@@ -8,11 +8,10 @@ cart. You check out yourself.
 |---|---|
 | Design specification | [`DESIGN_SPEC.md`](DESIGN_SPEC.md) |
 | Interactive prototype | **[srinathvenkatesh25.github.io/mealcart-design/prototype/](https://srinathvenkatesh25.github.io/mealcart-design/prototype/)** · files in [`prototype/`](prototype/) |
-| Working MVP (source) | [github.com/srinathvenkatesh25/mealcart.ai](https://github.com/srinathvenkatesh25/mealcart.ai) |
 
-The specification covers personas and mental models (decision rights, interrogation moments and
-trust cues), user journeys, wireframes and interactions, Material 3 alignment, and traceability from
-every UI element to a persona task and the MVP's code.
+The specification covers:
 
-Throughout, **Built** means the feature is in the MVP today. **Proposed** means it's designed here and
-shown in the prototype, but isn't in the MVP yet.
+- personas and mental models, with decision rights, interrogation moments and trust cues
+- user journeys and task flows
+- wireframes and interactions
+- Material 3 alignment

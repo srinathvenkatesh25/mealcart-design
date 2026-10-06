@@ -1,6 +1,5 @@
 {
- "source": "Exported from a real MealCart run (ids kept for traceability). ZIP replaced with 12345.",
- "run_id": "run_b91aa67527f8",
+ "source": "Sample week for the MealCart prototype.",
  "status": "cart_ready",
  "spec": {
   "days": 7,
@@ -130,7 +129,7 @@
       ],
       "steps": [
        "1. Heat oil in a pan over medium heat.",
-       "2. Saut\u00e9 cubed chicken thigh until browned on all sides.",
+       "2. Sauté cubed chicken thigh until browned on all sides.",
        "3. Stir in onion, tomato, white rice, cumin, and chili powder.",
        "4. Add 200 ml of water, cover, and simmer for 18 minutes until rice is tender.",
        "5. Rest for 2 minutes before serving."
@@ -269,7 +268,7 @@
       ],
       "steps": [
        "1. Heat oil in a pan over medium heat.",
-       "2. Saut\u00e9 cubed chicken thigh until browned on all sides.",
+       "2. Sauté cubed chicken thigh until browned on all sides.",
        "3. Stir in onion, tomato, white rice, cumin, and chili powder.",
        "4. Add 200 ml of water, cover, and simmer for 18 minutes until rice is tender.",
        "5. Rest for 2 minutes before serving."
@@ -317,7 +316,7 @@
       ],
       "steps": [
        "1. Heat canola oil in a pot over medium heat.",
-       "2. Saut\u00e9 onion and diced chicken for 4 minutes.",
+       "2. Sauté onion and diced chicken for 4 minutes.",
        "3. Add chopped tomato, potato cubes, cumin powder, and 1.5 cups of water.",
        "4. Bring to a boil, cover, and simmer for 18 minutes until potatoes are tender.",
        "5. Season to taste and serve warm."
@@ -595,7 +594,7 @@
       ],
       "steps": [
        "1. Heat canola oil in a pot over medium heat.",
-       "2. Saut\u00e9 onion and diced chicken for 4 minutes.",
+       "2. Sauté onion and diced chicken for 4 minutes.",
        "3. Add chopped tomato, potato cubes, cumin powder, and 1.5 cups of water.",
        "4. Bring to a boil, cover, and simmer for 18 minutes until potatoes are tender.",
        "5. Season to taste and serve warm."
@@ -643,7 +642,7 @@
       ],
       "steps": [
        "1. Heat olive oil in a skillet over medium heat.",
-       "2. Saut\u00e9 diced chicken and onion until chicken is cooked through (about 5 minutes).",
+       "2. Sauté diced chicken and onion until chicken is cooked through (about 5 minutes).",
        "3. Add beaten eggs and scramble until firm.",
        "4. Serve immediately with whole wheat toast."
       ],
@@ -782,7 +781,7 @@
       ],
       "steps": [
        "1. Heat olive oil in a skillet over medium heat.",
-       "2. Saut\u00e9 diced chicken and onion until chicken is cooked through (about 5 minutes).",
+       "2. Sauté diced chicken and onion until chicken is cooked through (about 5 minutes).",
        "3. Add beaten eggs and scramble until firm.",
        "4. Serve immediately with whole wheat toast."
       ],
@@ -924,7 +923,7 @@
       ],
       "steps": [
        "1. Heat olive oil in a skillet on medium.",
-       "2. Saut\u00e9 onion, tomato, and spinach for 2 minutes.",
+       "2. Sauté onion, tomato, and spinach for 2 minutes.",
        "3. Pour in beaten eggs and allow to set into an omelet.",
        "4. Fold in half and serve warm."
       ],
@@ -967,7 +966,7 @@
       "steps": [
        "1. Cook white rice in a pot according to package directions.",
        "2. Toss chicken strips and sliced onion with olive oil and chili powder.",
-       "3. Spread on a baking tray and bake in oven at 200\u00b0C (400\u00b0F) for 18 minutes.",
+       "3. Spread on a baking tray and bake in oven at 200°C (400°F) for 18 minutes.",
        "4. Serve baked fajita chicken and onions over warm rice."
       ],
       "prep_minutes": 25,
@@ -1004,7 +1003,7 @@
        {
         "name": "vegetable_oil",
         "grams": 8.0,
-        "preparation": "for saut\u00e9ing"
+        "preparation": "for sautéing"
        },
        {
         "name": "cumin_powder",
@@ -1013,7 +1012,7 @@
        }
       ],
       "steps": [
-       "1. Heat vegetable oil in a pot and saut\u00e9 onion and diced tomato for 3 minutes.",
+       "1. Heat vegetable oil in a pot and sauté onion and diced tomato for 3 minutes.",
        "2. Add 2 cups water, cubed potatoes, shredded chicken, and cumin.",
        "3. Bring to a boil, then simmer covered for 18 minutes.",
        "4. Serve hot in soup bowls."
@@ -2225,14 +2224,14 @@
    {
     "name": "banana",
     "total_grams": 340.0,
-    "purchase_qty": "3 \u00d7 banana (\u2248 0.7 lb)",
+    "purchase_qty": "3 × banana (≈ 0.7 lb)",
     "substitutes": [],
     "est_price_usd": null
    },
    {
     "name": "chicken_breast_boneless_skinless",
     "total_grams": 960.0,
-    "purchase_qty": "\u2248 2.25 lb",
+    "purchase_qty": "≈ 2.25 lb",
     "substitutes": [
      "chicken_breast",
      "chicken_tenderloins"
@@ -2242,7 +2241,7 @@
    {
     "name": "chicken_thigh_boneless_skinless",
     "total_grams": 450.0,
-    "purchase_qty": "\u2248 16 oz",
+    "purchase_qty": "≈ 16 oz",
     "substitutes": [
      "chicken_thigh",
      "chicken_breast_boneless_skinless"
@@ -2273,35 +2272,35 @@
    {
     "name": "milk_2_percent",
     "total_grams": 200.0,
-    "purchase_qty": "\u2248 7 fl oz",
+    "purchase_qty": "≈ 7 fl oz",
     "substitutes": [],
     "est_price_usd": null
    },
    {
     "name": "onion",
     "total_grams": 1090.0,
-    "purchase_qty": "8 \u00d7 onion (\u2248 2.4 lb)",
+    "purchase_qty": "8 × onion (≈ 2.4 lb)",
     "substitutes": [],
     "est_price_usd": 7.89
    },
    {
     "name": "peanut_butter",
     "total_grams": 40.0,
-    "purchase_qty": "\u2248 2 oz",
+    "purchase_qty": "≈ 2 oz",
     "substitutes": [],
     "est_price_usd": null
    },
    {
     "name": "potato",
     "total_grams": 1445.0,
-    "purchase_qty": "7 \u00d7 potato (\u2248 3.2 lb)",
+    "purchase_qty": "7 × potato (≈ 3.2 lb)",
     "substitutes": [],
     "est_price_usd": null
    },
    {
     "name": "rolled_oats",
     "total_grams": 140.0,
-    "purchase_qty": "\u2248 5 oz",
+    "purchase_qty": "≈ 5 oz",
     "substitutes": [
      "quick_oats"
     ],
@@ -2310,7 +2309,7 @@
    {
     "name": "spinach",
     "total_grams": 25.0,
-    "purchase_qty": "1 \u00d7 spinach (\u2248 0.1 lb)",
+    "purchase_qty": "1 × spinach (≈ 0.1 lb)",
     "substitutes": [
      "baby_spinach",
      "kale"
@@ -2320,14 +2319,14 @@
    {
     "name": "tomato",
     "total_grams": 1195.0,
-    "purchase_qty": "10 \u00d7 tomato (\u2248 2.6 lb)",
+    "purchase_qty": "10 × tomato (≈ 2.6 lb)",
     "substitutes": [],
     "est_price_usd": null
    },
    {
     "name": "whole_wheat_bread",
     "total_grams": 150.0,
-    "purchase_qty": "\u2248 6 oz",
+    "purchase_qty": "≈ 6 oz",
     "substitutes": [
      "multigrain_bread"
     ],
@@ -2340,7 +2339,7 @@
   "store": "Kroger",
   "lines": [
    {
-    "product_name": "Fresh Bunch of Bananas \u2013 5-7 Bananas",
+    "product_name": "Fresh Bunch of Bananas – 5-7 Bananas",
     "pack_size": "About 3.0 lb each",
     "pack_grams": 1360.7759999999998,
     "packs": 1,
@@ -2350,7 +2349,7 @@
     "substituted_for": null
    },
    {
-    "product_name": "Smart Way\u2122 Fresh Uncooked Thin Sliced Boneless Skinless Chicken Breasts",
+    "product_name": "Smart Way™ Fresh Uncooked Thin Sliced Boneless Skinless Chicken Breasts",
     "pack_size": "1.25 lb",
     "pack_grams": 566.99,
     "packs": 2,
@@ -2360,7 +2359,7 @@
     "substituted_for": null
    },
    {
-    "product_name": "Heritage Farm\u00ae Boneless Skinless Chicken Thighs",
+    "product_name": "Heritage Farm® Boneless Skinless Chicken Thighs",
     "pack_size": "About 3.03 lb / package",
     "pack_grams": 1374.38376,
     "packs": 1,
@@ -2370,7 +2369,7 @@
     "substituted_for": null
    },
    {
-    "product_name": "Kroger\u00ae Chili Powder Shaker",
+    "product_name": "Kroger® Chili Powder Shaker",
     "pack_size": "4 oz",
     "pack_grams": 113.398,
     "packs": 1,
@@ -2380,7 +2379,7 @@
     "substituted_for": null
    },
    {
-    "product_name": "Kroger\u00ae Ground Cumin Shaker",
+    "product_name": "Kroger® Ground Cumin Shaker",
     "pack_size": "1.62 oz",
     "pack_grams": 45.92619,
     "packs": 1,
@@ -2390,7 +2389,7 @@
     "substituted_for": null
    },
    {
-    "product_name": "Kroger\u00ae Grade A Large White Eggs",
+    "product_name": "Kroger® Grade A Large White Eggs",
     "pack_size": "12 ct",
     "pack_grams": 600.0,
     "packs": 1,
@@ -2400,7 +2399,7 @@
     "substituted_for": null
    },
    {
-    "product_name": "Kroger\u00ae 2% Reduced Fat Milk 16 fl. oz. Bottle",
+    "product_name": "Kroger® 2% Reduced Fat Milk 16 fl. oz. Bottle",
     "pack_size": "16 fl oz",
     "pack_grams": 487.37128,
     "packs": 1,
@@ -2410,7 +2409,7 @@
     "substituted_for": null
    },
    {
-    "product_name": "Kroger\u00ae Yellow Onion 3 lb Bag",
+    "product_name": "Kroger® Yellow Onion 3 lb Bag",
     "pack_size": "3 lb",
     "pack_grams": 1360.7759999999998,
     "packs": 1,
@@ -2440,7 +2439,7 @@
     "substituted_for": null
    },
    {
-    "product_name": "Kroger\u00ae 100% Whole Grain Old Fashioned Oats",
+    "product_name": "Kroger® 100% Whole Grain Old Fashioned Oats",
     "pack_size": "18 oz",
     "pack_grams": 510.291,
     "packs": 1,
@@ -2450,7 +2449,7 @@
     "substituted_for": null
    },
    {
-    "product_name": "Kroger\u00ae Baby Spinach",
+    "product_name": "Kroger® Baby Spinach",
     "pack_size": "6 oz",
     "pack_grams": 170.09699999999998,
     "packs": 1,
@@ -2460,7 +2459,7 @@
     "substituted_for": null
    },
    {
-    "product_name": "Private Selection\u00ae Campari Tomatoes",
+    "product_name": "Private Selection® Campari Tomatoes",
     "pack_size": "5 lb container",
     "pack_grams": 2267.96,
     "packs": 1,
@@ -2470,7 +2469,7 @@
     "substituted_for": null
    },
    {
-    "product_name": "Kroger\u00ae 100% Whole Wheat Bread",
+    "product_name": "Kroger® 100% Whole Wheat Bread",
     "pack_size": "16 oz",
     "pack_grams": 453.592,
     "packs": 1,
@@ -2790,7 +2789,6 @@
   }
  ],
  "needs_attention_example": {
-  "run_id": "run_9b98863223bd",
   "store": "Quicklly Indian Grocery",
   "missing": [
    {
@@ -2928,7 +2926,7 @@
      ],
      "steps": [
       "1. Heat oil in a pan over medium heat.",
-      "2. Saut\u00e9 cubed chicken thigh until browned on all sides.",
+      "2. Sauté cubed chicken thigh until browned on all sides.",
       "3. Stir in onion, tomato, white rice, cumin, and chili powder.",
       "4. Add 200 ml of water, cover, and simmer for 18 minutes until rice is tender.",
       "5. Rest for 2 minutes before serving."
